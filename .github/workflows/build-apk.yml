@@ -18,19 +18,22 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Preparar Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
       - name: Descomprimir tu archivo ZIP
         run: |
           unzip -q KwaiGenerator3000.zip -d project_source || unzip -q *.zip -d project_source
 
       - name: Compilar APK de depuracion
         run: |
-          cd project_source
-          if [ -d "KwaiGenerator3000" ]; then
-            cd KwaiGenerator3000
-          fi
-          # Otorgar permisos y compilar usando el SDK preinstalado en GitHub
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          # Buscamos dónde quedó el archivo build.gradle.kts dentro del ZIP
+          BUILD_DIR=$(find project_source -name "build.gradle.kts" -exec dirname {} \; | head -n 1)
+          echo "Compilando en la carpeta: $BUILD_DIR"
+          cd "$BUILD_DIR"
+          gradle assembleDebug --no-daemon
 
       - name: Guardar el APK resultante
         uses: actions/upload-artifact@v4
