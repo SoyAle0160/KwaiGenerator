@@ -20,21 +20,19 @@ jobs:
 
       - name: Preparar Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          items: platforms;35,build-tools;35.0.0
 
       - name: Descomprimir tu archivo ZIP
         run: |
-          echo "Buscando archivos ZIP..."
-          ls -la
           unzip -q KwaiGenerator3000.zip -d project_source || unzip -q *.zip -d project_source
 
       - name: Compilar APK de depuracion
         run: |
           cd project_source
-          # Si el zip descomprimió una carpeta contenedora, entramos en ella
           if [ -d "KwaiGenerator3000" ]; then
             cd KwaiGenerator3000
           fi
-          # Damos permisos de ejecución al gradlew
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
