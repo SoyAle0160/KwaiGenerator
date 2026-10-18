@@ -21,23 +21,22 @@ jobs:
       - name: Preparar Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Preparar Gradle 8.9
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
-
-      - name: Descomprimir tu archivo ZIP automaticamente
+      - name: Descomprimir tu archivo ZIP
         run: |
-          echo "Buscando el archivo ZIP..."
-          unzip -q *.zip -d project_source
+          echo "Buscando archivos ZIP..."
+          ls -la
+          unzip -q KwaiGenerator3000.zip -d project_source || unzip -q *.zip -d project_source
 
       - name: Compilar APK de depuracion
         run: |
           cd project_source
+          # Si el zip descomprimió una carpeta contenedora, entramos en ella
           if [ -d "KwaiGenerator3000" ]; then
             cd KwaiGenerator3000
           fi
-          gradle assembleDebug --no-daemon
+          # Damos permisos de ejecución al gradlew
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - name: Guardar el APK resultante
         uses: actions/upload-artifact@v4
